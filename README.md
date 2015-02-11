@@ -10,7 +10,7 @@ Pigoments is pygments for go.
 * [ ] Configuration
     * [ ] Dos INI
     * [ ] TOML
-* [ ] Diff
+* [x] Diff
 * [ ] Python
 * [ ] JavaScript
 * [ ] CoffeeScript
