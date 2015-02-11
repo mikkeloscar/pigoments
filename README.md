@@ -1,3 +1,5 @@
+[![GoDoc](https://godoc.org/github.com/mikkeloscar/pigoments?status.svg)](https://godoc.org/github.com/mikkeloscar/pigoments)
+
 # Pigoments
 
 Pigoments is pygments for go.
