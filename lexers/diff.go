@@ -15,8 +15,6 @@ func diffLexer(l *Lexer) stateFn {
 					l.emit(TokenGenericDeleted)
 				case '!':
 					l.emit(TokenGenericStrong)
-				case '@':
-					l.emit(TokenGenericSubheading)
 				case '=':
 					l.emit(TokenGenericHeading)
 				case 'i', 'I':
@@ -37,11 +35,30 @@ func diffLexer(l *Lexer) stateFn {
 			} else {
 				l.emit(TokenText)
 			}
+		case '@':
+			if l.next() == '@' {
+				return lexPosition
+			}
+			l.backup()
 		case eof:
 			if len(l.token()) > 0 {
 				l.emit(TokenText)
 			}
 			return nil
+		}
+	}
+}
+
+func lexPosition(l *Lexer) stateFn {
+	for {
+		switch l.next() {
+		case '@':
+			if l.next() == '@' {
+				l.emit(TokenGenericSubheading)
+			}
+		case '\n', eof:
+			l.emit(TokenText)
+			return lexText
 		}
 	}
 }
