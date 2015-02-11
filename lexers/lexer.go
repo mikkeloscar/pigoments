@@ -7,15 +7,20 @@ import (
 	"unicode/utf8"
 )
 
+var lexers = map[string]stateFn{
+	"go":   goLexer,
+	"diff": diffLexer,
+}
+
 const eof = -1
 
+// Pos defines a position in the input
 type Pos int
 
 // stateFn represents the state of the scanner as a function that returns the next state.
 type stateFn func(*Lexer) stateFn
 
-// lexer holds the state of the scanner.
-// TODO comments
+// Lexer holds the state of the scanner.
 type Lexer struct {
 	input   string      // the string being scanned
 	state   stateFn     // the next lexing function to enter
@@ -57,6 +62,7 @@ func (l *Lexer) emit(t TokenType) {
 	l.start = l.pos
 }
 
+// get current token
 func (l *Lexer) token() string {
 	return l.input[l.start:l.pos]
 }
@@ -108,7 +114,7 @@ func Lex(input, lang string) *Lexer {
 	l := &Lexer{
 		input: input,
 		// TODO use lang argument to decide this
-		lang:   goLexer,
+		lang:   lexers[lang],
 		tokens: make(chan *Token),
 	}
 	go l.run()
@@ -133,6 +139,7 @@ func isSpace(r rune) bool {
 	return r == ' ' || r == '\t'
 }
 
+// isWhiteSpace reports whether r is a whitespace character.
 func isWhiteSpace(r rune) bool {
 	return strings.IndexRune(" \t\n\r\f", r) >= 0
 }
@@ -142,6 +149,7 @@ func isEndOfLine(r rune) bool {
 	return r == '\r' || r == '\n'
 }
 
+// isUAlpha reports whether r is a unicode alpha character.
 func isUAlpha(r rune) bool {
 	return r == '_' || unicode.IsLetter(r)
 }
@@ -149,8 +157,4 @@ func isUAlpha(r rune) bool {
 // isAlphaNumeric reports whether r is an alphabetic, digit, or underscore.
 func isUAlphaNumeric(r rune) bool {
 	return isUAlpha(r) || unicode.IsDigit(r)
-}
-
-func isPunctuation(r rune) bool {
-	return strings.IndexRune("|^<>=!()[]{}.,;:", r) >= 0
 }

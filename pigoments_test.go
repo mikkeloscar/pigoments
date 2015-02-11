@@ -82,7 +82,10 @@ func TestLexers(t *testing.T) {
 
 			if expected, ok := tokensMap[expTokens[i]]; ok {
 				if expected != token.Type {
-					t.Errorf("invalid token: %s, expected: %s", tokToStr[token.Type], tokToStr[expected])
+					t.Errorf("invalid token: %s, expected: %s @ value: %s",
+						tokToStr[token.Type],
+						tokToStr[expected],
+						token.Value)
 				}
 			} else {
 				t.Errorf("invalid token: '%s' not found", expTokens[i])

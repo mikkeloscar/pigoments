@@ -20,13 +20,13 @@ func diffLexer(l *Lexer) stateFn {
 				case '=':
 					l.emit(TokenGenericHeading)
 				case 'i', 'I':
-					if len(l.token()) > 5 && l.token()[1:4] == "ndex" {
+					if len(l.token()) > 5 && l.token()[1:5] == "ndex" {
 						l.emit(TokenGenericHeading)
 					} else {
 						l.emit(TokenText)
 					}
 				case 'd':
-					if len(l.token()) > 4 && l.token()[1:3] == "iff" {
+					if len(l.token()) > 4 && l.token()[1:4] == "iff" {
 						l.emit(TokenGenericHeading)
 					} else {
 						l.emit(TokenText)
@@ -38,7 +38,9 @@ func diffLexer(l *Lexer) stateFn {
 				l.emit(TokenText)
 			}
 		case eof:
-			l.emit(TokenText)
+			if len(l.token()) > 0 {
+				l.emit(TokenText)
+			}
 			return nil
 		}
 	}

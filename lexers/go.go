@@ -1,6 +1,9 @@
 package lexers
 
-import "unicode"
+import (
+	"strings"
+	"unicode"
+)
 
 // keyword maps
 var namespaceKeywords = map[string]struct{}{
@@ -302,4 +305,9 @@ Loop:
 	}
 	l.emit(TokenLiteralString)
 	return lexText
+}
+
+// isPunctuation reports whether r is a unicode alpha character.
+func isPunctuation(r rune) bool {
+	return strings.IndexRune("|^<>=!()[]{}.,;:", r) >= 0
 }
