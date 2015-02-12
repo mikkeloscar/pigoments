@@ -115,34 +115,34 @@ func goLexer(l *Lexer) stateFn {
 	switch p := l.peek(); {
 	case isUAlpha(p):
 		l.next()
-		return lexKeywordIdentifier
+		return goLexKeywordIdentifier
 	case isWhiteSpace(p):
-		return lexWhitespace
+		return goLexWhitespace
 	case p == '/':
 		l.next()
 		if l.peek() == '/' {
 			l.next()
-			return lexSingleComment
+			return goLexSingleComment
 		}
 		l.emit(TokenText)
 		return lexText
 	case unicode.IsDigit(p):
-		return lexNumber
+		return goLexNumber
 	case p == '.':
 		l.next()
 		if unicode.IsDigit(l.peek()) {
 			l.backup()
-			return lexNumber
+			return goLexNumber
 		}
 		// TODO
 		l.emit(TokenPunctuation)
 		return lexText
 	case p == '"':
 		l.next()
-		return lexString
+		return goLexString
 	case p == '`':
 		l.next()
-		return lexRawString
+		return goLexRawString
 	case isGoPunctuation(p):
 		l.next()
 		l.emit(TokenPunctuation)
@@ -156,7 +156,7 @@ func goLexer(l *Lexer) stateFn {
 	}
 }
 
-func lexWhitespace(l *Lexer) stateFn {
+func goLexWhitespace(l *Lexer) stateFn {
 	for {
 		switch l.next() {
 		case ' ', '\t', '\n', '\r', '\f':
@@ -169,7 +169,7 @@ func lexWhitespace(l *Lexer) stateFn {
 	}
 }
 
-func lexSingleComment(l *Lexer) stateFn {
+func goLexSingleComment(l *Lexer) stateFn {
 	for {
 		switch l.next() {
 		case '\n', '\r':
@@ -182,7 +182,7 @@ func lexSingleComment(l *Lexer) stateFn {
 	}
 }
 
-func lexKeywordIdentifier(l *Lexer) stateFn {
+func goLexKeywordIdentifier(l *Lexer) stateFn {
 	for {
 		switch c := l.next(); {
 		case !isUAlpha(c):
@@ -211,7 +211,7 @@ func lexKeywordIdentifier(l *Lexer) stateFn {
 	}
 }
 
-func lexNumber(l *Lexer) stateFn {
+func goLexNumber(l *Lexer) stateFn {
 	digits := "0123456789"
 	if l.accept("0") && l.accept("xX") {
 		l.acceptRun("0123456789abcdefABCDEF")
@@ -249,7 +249,7 @@ func lexNumber(l *Lexer) stateFn {
 // lexChar scans a character constant. The initial quote is already
 // scanned. Syntax checking is done by the parser.
 // TODO invalid char length
-func lexChar(l *Lexer) stateFn {
+func goLexChar(l *Lexer) stateFn {
 Loop:
 	for {
 		switch l.next() {
@@ -271,7 +271,7 @@ Loop:
 	return lexText
 }
 
-func lexString(l *Lexer) stateFn {
+func goLexString(l *Lexer) stateFn {
 Loop:
 	for {
 		switch l.next() {
@@ -293,7 +293,7 @@ Loop:
 	return lexText
 }
 
-func lexRawString(l *Lexer) stateFn {
+func goLexRawString(l *Lexer) stateFn {
 Loop:
 	for {
 		switch l.next() {

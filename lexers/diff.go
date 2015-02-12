@@ -37,7 +37,7 @@ func diffLexer(l *Lexer) stateFn {
 			}
 		case '@':
 			if l.next() == '@' {
-				return lexPosition
+				return diffLexPosition
 			}
 			l.backup()
 		case eof:
@@ -47,7 +47,7 @@ func diffLexer(l *Lexer) stateFn {
 	}
 }
 
-func lexPosition(l *Lexer) stateFn {
+func diffLexPosition(l *Lexer) stateFn {
 	for {
 		switch l.next() {
 		case '@':
