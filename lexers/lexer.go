@@ -104,14 +104,14 @@ func (l *Lexer) errorf(format string, args ...interface{}) stateFn {
 	return nil
 }
 
-// nextItem returns the next item from the input.
+// NextToken returns the next token from the input.
 func (l *Lexer) NextToken() *Token {
 	token := <-l.tokens
 	// TODO l.lastPos = item.pos
 	return token
 }
 
-// lex creates a new scanner for the input string.
+// Lex creates a new scanner for the input string.
 func Lex(input, lang string) *Lexer {
 	l := &Lexer{
 		input: input,
