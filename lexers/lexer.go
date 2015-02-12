@@ -17,7 +17,7 @@ const eof = -1
 // Pos defines a position in the input
 type Pos int
 
-// stateFn represents the state of the scanner as a function that returns the next state.
+// stateFn represents the state of the lexer as a function that returns the next state.
 type stateFn func(*Lexer) stateFn
 
 // Lexer holds the state of the scanner.
