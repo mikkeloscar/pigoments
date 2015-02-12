@@ -143,7 +143,7 @@ func goLexer(l *Lexer) stateFn {
 	case p == '`':
 		l.next()
 		return lexRawString
-	case isPunctuation(p):
+	case isGoPunctuation(p):
 		l.next()
 		l.emit(TokenPunctuation)
 		return lexText
@@ -307,7 +307,7 @@ Loop:
 	return lexText
 }
 
-// isPunctuation reports whether r is a unicode alpha character.
-func isPunctuation(r rune) bool {
+// isGoPunctuation reports whether r is a unicode alpha character.
+func isGoPunctuation(r rune) bool {
 	return strings.IndexRune("|^<>=!()[]{}.,;:", r) >= 0
 }

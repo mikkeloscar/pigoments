@@ -41,9 +41,7 @@ func diffLexer(l *Lexer) stateFn {
 			}
 			l.backup()
 		case eof:
-			if len(l.token()) > 0 {
-				l.emit(TokenText)
-			}
+			l.emit(TokenText)
 			return nil
 		}
 	}

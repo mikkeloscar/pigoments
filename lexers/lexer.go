@@ -58,8 +58,10 @@ func (l *Lexer) backup() {
 
 // emit passes an item back to the client.
 func (l *Lexer) emit(t TokenType) {
-	l.tokens <- &Token{t, l.input[l.start:l.pos]}
-	l.start = l.pos
+	if l.start < l.pos {
+		l.tokens <- &Token{t, l.input[l.start:l.pos]}
+		l.start = l.pos
+	}
 }
 
 // get current token
