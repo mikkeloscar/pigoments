@@ -2,6 +2,7 @@ package lexers
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"unicode"
 	"unicode/utf8"
@@ -10,6 +11,7 @@ import (
 var lexers = map[string]stateFn{
 	"go":   goLexer,
 	"diff": diffLexer,
+	"html": htmlLexer,
 }
 
 const eof = -1
@@ -20,11 +22,35 @@ type Pos int
 // stateFn represents the state of the lexer as a function that returns the next state.
 type stateFn func(*Lexer) stateFn
 
+// stack of states in the lexer
+type stateStack []stateFn
+
+// get top state of stack
+func (s stateStack) top() stateFn {
+	if len(s) > 0 {
+		return s[len(s)-1]
+	}
+	return lexText
+}
+
+// pop state of stack
+func (s *stateStack) pop() stateFn {
+	d := (*s)[len(*s)-1]
+	(*s) = (*s)[:len(*s)-1]
+	return d
+}
+
+// push state onto stack
+func (s *stateStack) push(st stateFn) {
+	(*s) = append((*s), st)
+}
+
 // Lexer holds the state of the scanner.
 type Lexer struct {
-	input   string      // the string being scanned
-	state   stateFn     // the next lexing function to enter
-	lang    stateFn     // current lexer
+	input   string  // the string being scanned
+	state   stateFn // the next lexing function to enter
+	stack   stateStack
+	escape  *regexp.Regexp
 	pos     Pos         // current position in the input
 	start   Pos         // start position of this item
 	width   Pos         // width of last rune read from input
@@ -114,11 +140,11 @@ func (l *Lexer) NextToken() *Token {
 // Lex creates a new scanner for the input string.
 func Lex(input, lang string) *Lexer {
 	l := &Lexer{
-		input: input,
-		// TODO use lang argument to decide this
-		lang:   lexers[lang],
+		input:  input,
 		tokens: make(chan *Token),
 	}
+	// add lexer to stack
+	l.stack.push(lexers[lang])
 	go l.run()
 	return l
 }
@@ -131,9 +157,15 @@ func (l *Lexer) run() {
 	l.tokens <- nil // inform listener that we are done
 }
 
+// default lexer
 func lexText(l *Lexer) stateFn {
-	// TODO make stack
-	return l.lang
+	// if we are in a sub state check if we should leave it
+	if l.escape != nil && l.escape.MatchString(l.input[l.start:]) {
+		l.stack.pop()
+		l.escape = nil
+	}
+
+	return l.stack.top()
 }
 
 // isSpace reports whether r is a space character.
