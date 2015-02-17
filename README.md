@@ -15,7 +15,7 @@ Pigoments is pygments for go.
 * [ ] JavaScript
 * [ ] CoffeeScript
 * [ ] Java
-* [ ] HTML
+* [x] HTML (no inline js or css yet)
 * [ ] CSS
     * [ ] LESS
     * [ ] SASS
