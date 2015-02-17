@@ -88,9 +88,11 @@ func htmlLexTag(l *Lexer) stateFn {
 
 			l.emit(TokenNameTag)
 			return htmlLexAttribute
+		case eof:
+			l.emit(TokenText)
+			return nil
 		}
 	}
-	return lexText
 }
 
 func htmlLexAttribute(l *Lexer) stateFn {
